@@ -105,7 +105,7 @@ create or replace function get_compact_info(schema_name varchar, tbl_name varcha
             (
                 "No."         int,
                 "Column name" name,
-                "Attributes"    text
+                "Attributes"  text
             )
 as
 $$
