@@ -5,7 +5,7 @@
 
 ### Установка аргументов
 
-Из терминала (для строки): `psql ... -v myvariable="'value'"`
+Из терминала (для строки): `psql ... -v myvariable="'value'"`\
 Или если использовать трюк для строк: `psql ... -v myvariable=value`
 
 Из psql: `\set myvariable value`
