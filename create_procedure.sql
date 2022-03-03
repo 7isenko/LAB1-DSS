@@ -40,14 +40,14 @@ create or replace function get_full_info(schema_name varchar, tbl_name varchar)
 as
 $$
 BEGIN
-    return query select ordinal_position::int         as No,
+    return query select info.ordinal_position::int         as No,
                         info.column_name::name,
-                        udt_name::varchar             as type,
-                        character_maximum_length::int as cml,
+                        info.udt_name::varchar             as type,
+                        info.character_maximum_length::int as cml,
                         pgd.description::varchar,
                         i_name::name                  as index_name,
-                        numeric_precision::int,
-                        numeric_scale::int
+                        info.numeric_precision::int,
+                        info.numeric_scale::int
                  from information_schema.columns as info
                           left join pg_catalog.pg_statio_all_tables st
                                     on (info.table_name = st.relname and info.table_schema = st.schemaname)
