@@ -19,6 +19,7 @@ BEGIN
                    and a.attnum = ANY (ix.indkey)
                    and t.relkind = 'r'
                    and t.relname = tbl_name::name
+                   and t.relfilenode = tbl_name::regclass::oid /* Fixes a ton of other indexes from another students' schemes */
 
                  order by t.relname,
                           i.relname;
