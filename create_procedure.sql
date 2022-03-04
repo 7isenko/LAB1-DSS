@@ -46,7 +46,7 @@ BEGIN
                         info.udt_name::varchar             as type,
                         info.character_maximum_length::int as cml,
                         pgd.description::varchar,
-                        i_name::name                  as index_name,
+                        i_name::name                       as index_name,
                         info.numeric_precision::int,
                         info.numeric_scale::int
                  from information_schema.columns as info
@@ -118,23 +118,6 @@ BEGIN
 END;
 $$ language plpgsql;
 
-create or replace function get_compact_info_no_newline(schema_name varchar, tbl_name varchar)
-    returns table
-            (
-                "No."         int,
-                "Column name" name,
-                "Attributes"  text
-            )
-as
-$$
-BEGIN
-    return query select inf.No,
-                        inf.column_name,
-                        concat('Type: ', type, '; Commen: ', description, '; Index: ', index_name)
-                 from get_info(schema_name, tbl_name) as inf;
-END;
-$$ language plpgsql;
-
 create or replace function compact_info(schema_name varchar, tbl_name varchar)
     returns void
 as
@@ -143,9 +126,14 @@ declare
     rec record;
 
 BEGIN
-    for rec IN SELECT * FROM get_compact_info_no_newline(schema_name, tbl_name)
+    RAISE NOTICE '| No.      Column name         Attributes';
+    RAISE NOTICE '|-----------------------------------------------------';
+    for rec IN SELECT * FROM get_info(schema_name, tbl_name)
         loop
-            RAISE NOTICE 'No.: %, Column name: %, Attributes: %', rec."No.", rec."Column name", rec."Attributes";
+            RAISE NOTICE '%', format('| %-5s      %-9s       %-8s %-2s %-5s', rec.no, rec.column_name, 'Type', ':', rec.type);
+            RAISE NOTICE '%', format('|                            %-8s %-2s %-5s', 'Commen', ':', rec.description);
+            RAISE NOTICE '%', format('|                            %-8s %-2s %-5s', 'Index', ':', rec.index_name);
+            RAISE NOTICE '|';
         END LOOP;
 END;
 $$ language plpgsql;
