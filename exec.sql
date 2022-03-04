@@ -1,1 +1,1 @@
-select * from get_compact_info(:'schema', :'table');
+select compact_info(:'schema', :'table');

@@ -117,3 +117,35 @@ BEGIN
                  from get_info(schema_name, tbl_name) as inf;
 END;
 $$ language plpgsql;
+
+create or replace function get_compact_info_no_newline(schema_name varchar, tbl_name varchar)
+    returns table
+            (
+                "No."         int,
+                "Column name" name,
+                "Attributes"  text
+            )
+as
+$$
+BEGIN
+    return query select inf.No,
+                        inf.column_name,
+                        concat('Type: ', type, '; Commen: ', description, '; Index: ', index_name)
+                 from get_info(schema_name, tbl_name) as inf;
+END;
+$$ language plpgsql;
+
+create or replace function compact_info(schema_name varchar, tbl_name varchar)
+    returns void
+as
+$$
+declare
+    rec record;
+
+BEGIN
+    for rec IN SELECT * FROM get_compact_info_no_newline(schema_name, tbl_name)
+        loop
+            RAISE NOTICE 'No.: %, Column name: %, Attributes: %', rec."No.", rec."Column name", rec."Attributes";
+        END LOOP;
+END;
+$$ language plpgsql;
